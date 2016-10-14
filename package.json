@@ -1,0 +1,25 @@
+{
+  "name": "Monty-Hall-game",
+  "version": "0.0.0",
+  "private": true,
+  "license": "free",
+  "description": "Monty Hall game",
+  "devDependencies": {
+    "lite-server": "^2.2.2"
+  },
+  "scripts": {
+    "dev": "lite-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/austy81/Monty-Hall-game.git"
+  },
+  "keywords": [
+    "react",
+    "game"
+  ],
+  "author": "austy81",
+  "engines": {
+    "node": "0.12.x"
+  }
+}
