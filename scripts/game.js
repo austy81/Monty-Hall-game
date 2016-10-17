@@ -1,3 +1,21 @@
+var Summary = React.createClass({
+    render: function() {
+        this.props.totalWinsChangeStrategy
+        this.props.totalGamesChangeStrategy
+        this.props.totalWinsStickStrategy
+        this.props.totalGamesStickStrategy
+        return (
+            <div className='panel panel-info'>
+                <div className='panel-heading'>Wins strategy summary</div>
+                <div className='panel-body'>
+                    <div className='col-sm-6'>Change:</div><div className='col-sm-6'>{this.props.totalWinsChangeStrategy}/{this.props.totalGamesChangeStrategy}</div>
+                    <div className='col-sm-6'>Stick:</div><div className='col-sm-6'>{this.props.totalWinsStickStrategy}/{this.props.totalGamesStickStrategy}</div>
+                </div>
+            </div>
+        );
+    }
+});
+
 var Moderator = React.createClass({
   onRestartClick: function() {
     this.props.restartGame();
@@ -19,8 +37,13 @@ var Moderator = React.createClass({
             break;
     }
 
+    var wellStyle = {
+        maxHeight: '153px',
+        minHeight: '153px'
+    };
+
     return (
-            <div className="well">
+            <div className="well" style={wellStyle}>
                 <div><i>Moderator:</i></div>
                 <h3>{message}</h3>
                 { currentRound == 3 ? <button className="btn btn-default" onClick={this.onRestartClick}>Restart</button> : null}
@@ -50,18 +73,18 @@ var Door = React.createClass({
     var className = "panel panel-";
     switch(currentRound) {
     case 1:
-        className += "info";
+        className += "primary";
         break;
     case 2:
         if(selectedByPlayer) className += "warning";
         else if(openedEmptyDoors) className += "default";
-        else className += "info";
+        else className += "primary";
         break;
     default:
         if(selectedByPlayer && treasure)   className += "success";
         if(selectedByPlayer && !treasure)   className += "danger";
         if(openedEmptyDoors) className += "default";
-        if(!selectedByPlayer && !openedEmptyDoors) className += "info";
+        if(!selectedByPlayer && !openedEmptyDoors) className += "primary";
     }
 
     var showOpenButton = true;
@@ -91,7 +114,12 @@ var Game = React.createClass({
             secretTreasureDoors: Math.floor(Math.random() * 3) + 1,
             selectedDoorsByPlayer: 0,
             openedEmptyDoors: 0,
-            currentRound: 1
+            currentRound: 1,
+            playersStrategyChange: false,
+            totalWinsChangeStrategy: 0,
+            totalGamesChangeStrategy: 0,
+            totalWinsStickStrategy: 0,
+            totalGamesStickStrategy: 0
         }
     },
     nextRound: function(selectedDoors) {
@@ -99,7 +127,8 @@ var Game = React.createClass({
         this.setState(
             {
                 currentRound: this.state.currentRound + 1,
-                selectedDoorsByPlayer: selectedDoors
+                selectedDoorsByPlayer: selectedDoors,
+                playersStrategyChange: (this.state.currentRound == 2 && this.state.selectedDoorsByPlayer != selectedDoors) ? true : this.state.playersStrategyChange
             }
         );
 
@@ -124,15 +153,23 @@ var Game = React.createClass({
                 openedEmptyDoors: openedEmptyDoors
             });
         }
-        
+      
     },
     restartGame: function() {
+        var win = this.state.selectedDoorsByPlayer == this.state.secretTreasureDoors;
+        var changed = this.state.playersStrategyChange;
+
         this.setState(
             {
                 secretTreasureDoors: Math.floor(Math.random() * 3) + 1,
                 selectedDoorsByPlayer: 0,
                 openedEmptyDoors: 0,
-                currentRound: 1
+                currentRound: 1,
+                playersStrategyChange: false,
+                totalWinsChangeStrategy: changed && win ? this.state.totalWinsChangeStrategy+1 : this.state.totalWinsChangeStrategy,
+                totalGamesChangeStrategy: changed ? this.state.totalGamesChangeStrategy+1 : this.state.totalGamesChangeStrategy,
+                totalWinsStickStrategy: !changed && win ? this.state.totalWinsStickStrategy+1 : this.state.totalWinsStickStrategy,
+                totalGamesStickStrategy: !changed ? this.state.totalGamesStickStrategy+1 : this.state.totalGamesStickStrategy
             }
         )
     },
@@ -171,12 +208,21 @@ var Game = React.createClass({
                         nextRound={this.nextRound} />
                 </div>
                 <div className="col-sm-1"></div>
-            </div> 
+            </div>
+            <div className="col-sm-6">
             <Moderator 
                 currentRound={this.state.currentRound} 
                 restartGame={this.restartGame}
                 openedEmptyDoors={this.state.openedEmptyDoors} 
                 won={this.state.secretTreasureDoors == this.state.selectedDoorsByPlayer}/>
+            </div>
+            <div className="col-sm-6">
+                <Summary
+                    totalWinsChangeStrategy={this.state.totalWinsChangeStrategy}
+                    totalGamesChangeStrategy={this.state.totalGamesChangeStrategy}    
+                    totalWinsStickStrategy={this.state.totalWinsStickStrategy}
+                    totalGamesStickStrategy={this.state.totalGamesStickStrategy} />
+            </div>
         </div> 
         );
     }
