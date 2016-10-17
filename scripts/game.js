@@ -1,4 +1,7 @@
 var Moderator = React.createClass({
+  onRestartClick: function() {
+    this.props.restartGame();
+  },
   render: function() {
     var currentRound = this.props.currentRound;
 
@@ -20,7 +23,7 @@ var Moderator = React.createClass({
             <div className="well">
                 <div><i>Moderator:</i></div>
                 <h3>{message}</h3>
-                { currentRound == 3 ? <button className="btn btn-default" onClick={this.props.restartGame}>Restart</button> : null}
+                { currentRound == 3 ? <button className="btn btn-default" onClick={this.onRestartClick}>Restart</button> : null}
             </div>
         
     );
@@ -28,6 +31,9 @@ var Moderator = React.createClass({
 });
 
 var Door = React.createClass({
+  onNextRoundClick: function(selectedDoors) {
+       this.props.nextRound(selectedDoors);
+  },
   render: function() {
 
     var doorNumber = this.props.doorNumber; //[1,2,3]
@@ -72,7 +78,7 @@ var Door = React.createClass({
                         <h3 className="panel-title">Doors {doorNumber}</h3>
                     </div>
                     <div className="panel-body" style={divStyle} >
-                        { showOpenButton ? <button className="btn btn-info" onClick={nextRound.bind(this,doorNumber)}>Open</button> : null}
+                        { showOpenButton ? <button className="btn btn-info" onClick={this.onNextRoundClick.bind(this,doorNumber)}>Open</button> : null}
                     </div>
                 </div>
     );
