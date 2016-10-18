@@ -18,8 +18,6 @@ var Summary = React.createClass({
     componentWillReceiveProps: function (newProps) {
         var stickRatio = newProps.totalWinsChangeStrategy / newProps.totalGamesChangeStrategy;
         var changeRatio = newProps.totalWinsStickStrategy / newProps.totalGamesStickStrategy;
-        this.chart.unload({ids:'stick'});
-        this.chart.unload({ids:'change'});
         this.chart.load({
             columns: [
             ['stick', stickRatio],
