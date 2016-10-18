@@ -1,15 +1,44 @@
 var Summary = React.createClass({
+    _renderChart: function(data) {
+        this.chart = c3.generate({
+            bindto: '#chart',
+            data: {
+                columns: data,
+                type: 'pie'
+            }
+        });
+    },
+    componentDidMount: function () {
+        var data = [
+            ['stick', 0],
+            ['change', 0]
+        ];
+        this._renderChart(data);
+    },
+    componentWillReceiveProps: function (newProps) {
+        var stickRatio = newProps.totalWinsChangeStrategy / newProps.totalGamesChangeStrategy;
+        var changeRatio = newProps.totalWinsStickStrategy / newProps.totalGamesStickStrategy;
+        this.chart.unload({ids:'stick'});
+        this.chart.unload({ids:'change'});
+        this.chart.load({
+            columns: [
+            ['stick', stickRatio],
+            ['change', changeRatio]
+        ]
+        }); // or whatever API you need
+    },
     render: function() {
-        this.props.totalWinsChangeStrategy
-        this.props.totalGamesChangeStrategy
-        this.props.totalWinsStickStrategy
-        this.props.totalGamesStickStrategy
         return (
             <div className='panel panel-info'>
                 <div className='panel-heading'>Wins strategy summary</div>
                 <div className='panel-body'>
-                    <div className='col-sm-6'>Change:</div><div className='col-sm-6'>{this.props.totalWinsChangeStrategy}/{this.props.totalGamesChangeStrategy}</div>
-                    <div className='col-sm-6'>Stick:</div><div className='col-sm-6'>{this.props.totalWinsStickStrategy}/{this.props.totalGamesStickStrategy}</div>
+                    <div className='col-sm-12'>
+                        <div className='col-sm-6'>Change:</div>
+                        <div className='col-sm-6'>{this.props.totalWinsChangeStrategy}/{this.props.totalGamesChangeStrategy}</div>
+                        <div className='col-sm-6'>Stick:</div>
+                        <div className='col-sm-6'>{this.props.totalWinsStickStrategy}/{this.props.totalGamesStickStrategy}</div>
+                    </div>
+                    <div id="chart"></div>
                 </div>
             </div>
         );
@@ -44,7 +73,7 @@ var Moderator = React.createClass({
 
     return (
             <div className="well" style={wellStyle}>
-                <div><i>Moderator:</i></div>
+                <div><em>Moderator:</em></div>
                 <h3>{message}</h3>
                 { currentRound == 3 ? <button className="btn btn-default" onClick={this.onRestartClick}>Restart</button> : null}
             </div>
